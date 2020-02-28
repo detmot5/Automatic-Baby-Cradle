@@ -9,10 +9,10 @@
 #define CRADLE_H_
 
 
-
+typedef uint8_t ServoMvRes_t;
 
 extern volatile uint16_t Timer1,Timer2,Timer3;
 extern uint16_t servo_pos, servo_speed;
 void softTimInit(void);
-void servoEvent(void);
+ServoMvRes_t servoEvent(void);
 #endif /* CRADLE_H_ */

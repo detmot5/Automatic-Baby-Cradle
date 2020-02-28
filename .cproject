@@ -13,7 +13,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${ProjName}" buildArtefactType="de.innot.avreclipse.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=de.innot.avreclipse.buildArtefactType.app,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" description="" id="de.innot.avreclipse.configuration.app.release.34472940" name="Release" optionalBuildProperties="" parent="de.innot.avreclipse.configuration.app.release">
+				<configuration artifactName="${ProjName}" buildArtefactType="de.innot.avreclipse.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=de.innot.avreclipse.buildArtefactType.app,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" description="" id="de.innot.avreclipse.configuration.app.release.34472940" name="Release" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="de.innot.avreclipse.configuration.app.release">
 					<folderInfo id="de.innot.avreclipse.configuration.app.release.34472940." name="/" resourcePath="">
 						<toolChain id="de.innot.avreclipse.toolchain.winavr.app.release.696763363" name="AVR-GCC Toolchain" superClass="de.innot.avreclipse.toolchain.winavr.app.release">
 							<option id="de.innot.avreclipse.toolchain.options.toolchain.objcopy.flash.app.release.1324105377" name="Generate HEX file for Flash memory" superClass="de.innot.avreclipse.toolchain.options.toolchain.objcopy.flash.app.release"/>
@@ -27,7 +27,7 @@
 								<option id="de.innot.avreclipse.assembler.option.debug.level.620504253" name="Generate Debugging Info" superClass="de.innot.avreclipse.assembler.option.debug.level" value="de.innot.avreclipse.assembler.option.debug.level.none" valueType="enumerated"/>
 								<inputType id="de.innot.avreclipse.tool.assembler.input.396859133" superClass="de.innot.avreclipse.tool.assembler.input"/>
 							</tool>
-							<tool id="de.innot.avreclipse.tool.compiler.winavr.app.release.1813386650" name="AVR Compiler" superClass="de.innot.avreclipse.tool.compiler.winavr.app.release">
+							<tool command="avr-gcc" id="de.innot.avreclipse.tool.compiler.winavr.app.release.1813386650" name="AVR Compiler" superClass="de.innot.avreclipse.tool.compiler.winavr.app.release">
 								<option id="de.innot.avreclipse.compiler.option.debug.level.1430175633" name="Generate Debugging Info" superClass="de.innot.avreclipse.compiler.option.debug.level" value="de.innot.avreclipse.compiler.option.debug.level.none" valueType="enumerated"/>
 								<option id="de.innot.avreclipse.compiler.option.optimize.774727396" name="Optimization Level" superClass="de.innot.avreclipse.compiler.option.optimize" value="de.innot.avreclipse.compiler.optimize.size" valueType="enumerated"/>
 								<inputType id="de.innot.avreclipse.compiler.winavr.input.1523326331" name="C Source Files" superClass="de.innot.avreclipse.compiler.winavr.input"/>
@@ -70,6 +70,10 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/Automatic_Cradle"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

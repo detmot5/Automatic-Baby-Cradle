@@ -6,18 +6,28 @@
  */
 
 #include <avr/io.h>
+#include <util/delay.h>
 #include <avr/pgmspace.h>
 #include "LCD/lcd44780.h"
 #include "cradle.h"
 
+ServoMvRes_t result;
+
+
 int main(void) {
-	lcd_init();
-	lcd_str_P(PSTR("start.."));
+
 	softTimInit();
-	servo_speed = 2;
-	servo_pos = 500;
+	servo_speed = 1;
+	servo_pos = 2500;
 	//OCR1A = 800;
+	DDRB |= (1<<PB0);
+	PORTB |= (1<<PB0);
 	while(1){
-		servoEvent();
+		result = servoEvent();
+		if(result){
+			servo_pos = 500;
+			PORTB &= ~(1<<PB0);
+		}
+	//	_delay_us(5000);
 	}
 }
