@@ -1,1 +1,2 @@
 # Automatic-Baby-Cradle
+start
