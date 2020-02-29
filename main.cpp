@@ -22,6 +22,8 @@ int main(void) {
 	//OCR1A = 800;
 	DDRB |= (1<<PB0);
 	PORTB |= (1<<PB0);
+
+
 	while(1){
 		result = servoEvent();
 		if(result){
