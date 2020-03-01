@@ -16,4 +16,7 @@ extern uint16_t servo_pos, servo_speed;
 void softTimInit(void);
 
 ServoMvRes_t servo_event(uint16_t angle, uint8_t speed);
+void servoSet(uint16_t duration, uint8_t speed);
+
+
 #endif /* CRADLE_H_ */
