@@ -10,31 +10,34 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+
 #include "LCD/lcd44780.h"
 #include "UARTlib/uart.h"
-#include "cradle.h"
 #include "AT_commands.h"
-ServoMvRes_t result;
+#include "cradle.h"
+
+//ServoMvRes_t result;
 
 
 
 
 int main(void) {
-
-	cli();
-	wdt_disable();
-	softTimInit();
-	USART_BeginTransmission(__UBRR);
-	servo_speed = 2;
-	usart_rx_str_register_event_callback(parse_uart_data);
-	DDRD |= (1<<PD7);
 	char buff[20];
+
+	timersInit();
+	//servo_speed = 2;
+
+	USART_BeginTransmission(__UBRR);
+
+	usart_rx_str_register_event_callback(parse_uart_data);
 	USART_PutStr_P(PSTR("Start\r\n"));
+
+	DDRD |= (1<<PD7);
 	PORTD |= (1<<PD7);
-	//int i = 0;
 
 	while(1){
 		USART_RX_STR_EVENT(buff);
+		servo_event(2500,2);
 		if(!Timer1){
 			PORTD ^= (1<<PD7);
 			Timer1 = 500;

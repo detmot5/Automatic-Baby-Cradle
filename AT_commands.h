@@ -11,6 +11,7 @@
 
 typedef int8_t atresult_t;
 
+
 typedef struct{
 	char AT_command[10];
 	atresult_t (* at_service)(uint8_t inout, char *params);
@@ -18,6 +19,7 @@ typedef struct{
 
 
 extern const atcmd_t atCommands[] PROGMEM;
+
 
 void parse_uart_data(char *pbuf);
 
