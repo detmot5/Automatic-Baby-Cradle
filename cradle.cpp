@@ -11,22 +11,23 @@
 #include <avr/interrupt.h>
 
 #include "cradle.h"
-
+#include "eeprom.h"
 //--------------------------------------------------------------------------
 //						    GLOBAL VARIABLES
 //--------------------------------------------------------------------------
 
+svParams_t servoParams_eep EEMEM;
 svParams_t servoParams;
-
 volatile uint16_t Timer1,Timer2,Timer3,Timer4;
 
 
-uint16_t servo_pos;
+static uint16_t servo_pos;
 static uint16_t servo_actual_pos = _SERVO_MIN;
 
 //--------------------------------------------------------------------------
 //						  STATIC FUNCTIONS
 //--------------------------------------------------------------------------
+
 
 static int8_t servoDrive(void){
 	static uint8_t isDone;
@@ -61,10 +62,10 @@ static int8_t servoDrive(void){
 
 //--------------------------------------------------------------------------
 
-void timersInit(void){
+void cradleInit(void){
 		//**INITIALIZE SERVO PARAMETERS**
-	servoParams.duration = _SERVO_MAX;
-	servoParams.speed = _SERVO_MIN_SPEED;
+	eeprom_read_duration();
+	eeprom_read_speed();
 
 		// **INIT SERVO TIMER**
 	TCCR1A |= (1<<WGM11);						// Fast PWM mode - TOP value - ICR1
@@ -86,7 +87,7 @@ void timersInit(void){
 
 
 
-int8_t servo_event(void){
+int8_t CRADLE_EVENT(void){
 	int8_t result;
 
 

@@ -24,8 +24,7 @@
 int main(void) {
 	char buff[20];
 
-	timersInit();
-
+	cradleInit();
 
 	USART_BeginTransmission(__UBRR);
 
@@ -38,7 +37,7 @@ int main(void) {
 
 	while(1){
 		USART_RX_STR_EVENT(buff);
-		servo_event();
+		CRADLE_EVENT();
 		if(!Timer1){
 			PORTD ^= (1<<PD7);
 			Timer1 = 500;

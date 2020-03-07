@@ -15,8 +15,8 @@
 #define _SERVO_MIN						500						// Min value of PWM duration
 #define _SERVO_MAX						2500					// Max value of PWM duration
 
-#define _SERVO_MAX_SPEED				1
-#define _SERVO_MIN_SPEED				7						// Delay between each servo step
+#define _SERVO_MIN_DELAY				1						// Delay between each servo step
+#define _SERVO_MAX_DELAY				7
 
 #define SERVO_OUT DDRB |= (1<<PB1);								// OCR1 pin out (atmega88)
 
@@ -48,8 +48,8 @@ typedef struct {
 
 extern volatile uint16_t Timer1,Timer2,Timer3;
 
-void timersInit(void);
-int8_t servo_event(void);
+void cradleInit(void);
+int8_t CRADLE_EVENT(void);
 
 
 #endif /* CRADLE_H_ */
