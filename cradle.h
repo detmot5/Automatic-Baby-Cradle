@@ -9,13 +9,16 @@
 #define CRADLE_H_
 
 //--------------------------------------------------------------------------
-//						    LIBRARY SETTINGS
+//						    PROGRAMM SETTINGS
 //--------------------------------------------------------------------------
 
-#define _SERVO_MIN						800						// Min value of PWM duration
-#define _SERVO_MAX						2200					// Max value of PWM duration
+#define _SERVO_MIN						500						// Min value of PWM duration
+#define _SERVO_MAX						2500					// Max value of PWM duration
 
-#define SERVO_OUT DDRB |= (1<<PB1);						// OCR1 pin out (atmega88)
+#define _SERVO_MAX_SPEED				1
+#define _SERVO_MIN_SPEED				7						// Delay between each servo step
+
+#define SERVO_OUT DDRB |= (1<<PB1);								// OCR1 pin out (atmega88)
 
 #define servoWrite(_dur)	OCR1A = usToTicks(_dur)
 
@@ -32,35 +35,11 @@
 
 
 
+typedef struct {
+	uint8_t speed;
+	uint16_t duration;
+}svParams_t;
 
-
-/*
-
-class Servo{
-public:
-
-	static void SetDuration(uint16_t duration){
-		_duration = duration;
-	}
-	static void SetSpeed(uint8_t speed){
-		_speed = speed;
-	}
-
-	static uint16_t GetDuration(void){
-		return _duration;
-	}
-	static uint8_t GetSpeed(void){
-		return _speed;
-	}
-
-private:
-	static uint16_t _duration;
-	static uint8_t _speed;
-
-
-};
-
-*/
 
 
 //--------------------------------------------------------------------------
@@ -70,8 +49,7 @@ private:
 extern volatile uint16_t Timer1,Timer2,Timer3;
 
 void timersInit(void);
-
-int8_t servo_event(uint16_t angle, uint8_t speed);
+int8_t servo_event(void);
 
 
 #endif /* CRADLE_H_ */

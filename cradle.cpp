@@ -12,13 +12,16 @@
 
 #include "cradle.h"
 
+//--------------------------------------------------------------------------
+//						    GLOBAL VARIABLES
+//--------------------------------------------------------------------------
 
-
+svParams_t servoParams;
 
 volatile uint16_t Timer1,Timer2,Timer3,Timer4;
 
+
 uint16_t servo_pos;
-uint8_t servo_speed = 2;
 static uint16_t servo_actual_pos = _SERVO_MIN;
 
 //--------------------------------------------------------------------------
@@ -32,7 +35,7 @@ static int8_t servoDrive(void){
 		isDone = 0;
 		if(!Timer4 && !isDone){
 				// speed - delay between each step
-			Timer4 = servo_speed;
+			Timer4 = servoParams.speed;
 			// going forward
 			if(servo_actual_pos < servo_pos){
 					//increment on every step
@@ -59,6 +62,9 @@ static int8_t servoDrive(void){
 //--------------------------------------------------------------------------
 
 void timersInit(void){
+		//**INITIALIZE SERVO PARAMETERS**
+	servoParams.duration = _SERVO_MAX;
+	servoParams.speed = _SERVO_MIN_SPEED;
 
 		// **INIT SERVO TIMER**
 	TCCR1A |= (1<<WGM11);						// Fast PWM mode - TOP value - ICR1
@@ -67,6 +73,7 @@ void timersInit(void){
 	TCCR1A |= (1<<COM1A1);						// OCR1A active (non inverting mode)
 	ICR1 = usToTicks(_SERVO_REFRESH_INTERVAL);	// Set top value to 20000us
 	SERVO_OUT;
+
 
 		// **INIT TIME BASE TIMER**
 	TCCR0A |= (1<<WGM01);						// CTC mode
@@ -79,7 +86,7 @@ void timersInit(void){
 
 
 
-int8_t servo_event(uint16_t angle, uint8_t speed){
+int8_t servo_event(void){
 	int8_t result;
 
 
@@ -87,7 +94,7 @@ int8_t servo_event(uint16_t angle, uint8_t speed){
 		servo_pos = _SERVO_MIN; 	// move done, go back
 	}
 	else if(result == 2){
-		servo_pos = angle;		//repeat
+		servo_pos = servoParams.duration;		//repeat
 	}
 	return result;
 }

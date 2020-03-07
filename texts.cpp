@@ -20,4 +20,7 @@ const char _unknownCmd[] PROGMEM = "ERROR - unknown command\r\n";
 
 const char _version[] PROGMEM = "Automatic Baby Cradle v1.0\r\n";
 
+const char _atSpd[] PROGMEM = "Use AT+SPD=spd\r\n";
+const char _atDur[] PROGMEM = "Use AT+DUR=dur\r\n";
+
 

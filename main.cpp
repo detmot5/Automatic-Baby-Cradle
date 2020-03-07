@@ -13,7 +13,7 @@
 
 #include "LCD/lcd44780.h"
 #include "UARTlib/uart.h"
-#include "AT_commands.h"
+#include "AT_commands/AT_commands.h"
 #include "cradle.h"
 
 //ServoMvRes_t result;
@@ -25,11 +25,12 @@ int main(void) {
 	char buff[20];
 
 	timersInit();
-	//servo_speed = 2;
+
 
 	USART_BeginTransmission(__UBRR);
 
 	usart_rx_str_register_event_callback(parse_uart_data);
+
 	USART_PutStr_P(PSTR("Start\r\n"));
 
 	DDRD |= (1<<PD7);
@@ -37,7 +38,7 @@ int main(void) {
 
 	while(1){
 		USART_RX_STR_EVENT(buff);
-		servo_event(2500,2);
+		servo_event();
 		if(!Timer1){
 			PORTD ^= (1<<PD7);
 			Timer1 = 500;

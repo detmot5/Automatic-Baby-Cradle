@@ -9,13 +9,16 @@
 #define TEXTS_H_
 
 
-extern const char _endl[] PROGMEM;
+extern const char _endl[];
 
-extern const char _OK[] PROGMEM;
-extern const char _errorCmd[] PROGMEM;
-extern const char _unknownCmd[] PROGMEM;
+extern const char _OK[];
+extern const char _errorCmd[];
+extern const char _unknownCmd[];
 
-extern const char _version[] PROGMEM;
+extern const char _version[];
+
+extern const char _atSpd[];
+extern const char _atDur[];
 
 
 
