@@ -18,11 +18,13 @@
 
 svParams_t servoParams_eep EEMEM;
 svParams_t servoParams;
+uint8_t stopFlag;
 volatile uint16_t Timer1,Timer2,Timer3,Timer4;
 
 
 static uint16_t servo_pos;
 static uint16_t servo_actual_pos = _SERVO_MIN;
+
 
 //--------------------------------------------------------------------------
 //						  STATIC FUNCTIONS
@@ -38,14 +40,14 @@ static int8_t servoDrive(void){
 				// speed - delay between each step
 			Timer4 = servoParams.speed;
 			// going forward
-			if(servo_actual_pos < servo_pos){
+			if(servo_actual_pos < servo_pos && !stopFlag){
 					//increment on every step
 				servo_actual_pos++;
 					//set this value to servo
 				servoWrite(servo_actual_pos);
 			}
 			//going back
-			else{
+			else if(!stopFlag){
 					//decrement on every step
 				servo_actual_pos--;
 				servoWrite(servo_actual_pos);
@@ -71,7 +73,7 @@ void cradleInit(void){
 	TCCR1A |= (1<<WGM11);						// Fast PWM mode - TOP value - ICR1
 	TCCR1B |= (1<<WGM12) | (1<<WGM13);
 	TCCR1B |= (1<<CS11);						// Timer prescaler /8
-	TCCR1A |= (1<<COM1A1);						// OCR1A active (non inverting mode)
+	TCCR1A |= (1<<COM1A1);						// OC1A active (non inverting mode)
 	ICR1 = usToTicks(_SERVO_REFRESH_INTERVAL);	// Set top value to 20000us
 	SERVO_OUT;
 

@@ -31,7 +31,7 @@ void eeprom_read_speed(void){
 void eeprom_read_duration(void){
 	register uint16_t temp = eeprom_read_word(&servoParams_eep.duration);
 
-	if(temp >= _SERVO_MIN_DELAY && temp <= _SERVO_MAX_DELAY)servoParams.duration = temp;
+	if(temp >= _SERVO_MIN && temp <= _SERVO_MAX)servoParams.duration = temp;
 	else servoParams.duration = _SERVO_MIN;
 }
 

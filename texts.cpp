@@ -12,15 +12,16 @@
 
 const char _endl[] PROGMEM = "\r\n";
 
-const char _OK[] PROGMEM = "OK \r\n";
-const char _errorCmd[] PROGMEM = "ERROR\r\n";
-const char _unknownCmd[] PROGMEM = "ERROR - unknown command\r\n";
+const char _OK[] PROGMEM = "OK";
+const char _errorCmd[] PROGMEM = "ERROR";
+const char _unknownCmd[] PROGMEM = "ERROR: unknown cmd";
 
 
 
-const char _version[] PROGMEM = "Automatic Baby Cradle v1.0\r\n";
+const char _version[] PROGMEM = "Automatic Baby Cradle v1.0";
 
-const char _atSpd[] PROGMEM = "Use AT+SPD=spd\r\n";
-const char _atDur[] PROGMEM = "Use AT+DUR=dur\r\n";
+const char _atSpd[] PROGMEM = "Use AT+SPD=spd";
+const char _atDur[] PROGMEM = "Use AT+DUR=dur";
+const char _deviceStopped[] PROGMEM = "Device stopped";
 
 

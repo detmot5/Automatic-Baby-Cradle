@@ -12,8 +12,8 @@
 //						    PROGRAMM SETTINGS
 //--------------------------------------------------------------------------
 
-#define _SERVO_MIN						500						// Min value of PWM duration
-#define _SERVO_MAX						2500					// Max value of PWM duration
+#define _SERVO_MIN						400						// Min value of PWM duration
+#define _SERVO_MAX						2600					// Max value of PWM duration
 
 #define _SERVO_MIN_DELAY				1						// Delay between each servo step
 #define _SERVO_MAX_DELAY				7
