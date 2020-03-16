@@ -22,7 +22,7 @@ There is few parameters which can be controlled:
 In this project I implemented AT_comannds handling using events and callbacks, the explanation of it is given below.
 
 * AT - Standard command. When sent, device answers "OK"
-* ATI - When send device prints us information about it.
+* ATI - When sent device prints us information about it.
 * AT+RST - Reset device
 * AT+SPD - Changing speed of rocking
 * AT+DUR - Changing range of rocking 
