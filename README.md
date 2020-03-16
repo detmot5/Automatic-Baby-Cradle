@@ -12,7 +12,7 @@ It is an attachment to baby cradle which can rock it automatically using servo m
 
 There is few parameters which can be controlled:
  1. Speed
- 2. Move range of servo
+ 2. Moving range of servo
  3. Rocking Time
  
  > Device can also be stopped using single button any time.
