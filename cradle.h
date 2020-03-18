@@ -12,8 +12,8 @@
 //						    PROGRAMM SETTINGS
 //--------------------------------------------------------------------------
 
-#define _SERVO_MIN						400						// Min value of PWM duration
-#define _SERVO_MAX						2600					// Max value of PWM duration
+#define _SERVO_MIN						800						// Min value of PWM duration
+#define _SERVO_MAX						2200					// Max value of PWM duration
 
 #define _SERVO_MIN_DELAY				1						// Delay between each servo step
 #define _SERVO_MAX_DELAY				7
@@ -38,6 +38,7 @@
 typedef struct {
 	uint8_t speed;
 	uint16_t duration;
+	uint16_t actualPos;
 }svParams_t;
 
 
@@ -46,7 +47,7 @@ typedef struct {
 //					DECLARATIONS OF FUNCTIONS AND VARIABLES
 //--------------------------------------------------------------------------
 
-extern volatile uint16_t Timer1,Timer2,Timer3;
+
 
 void cradleInit(void);
 int8_t CRADLE_EVENT(void);

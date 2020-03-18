@@ -1,19 +1,18 @@
 /*
  * common.cpp
  *
- *  Created on: 13 mar 2020
- *      Author: norbe
+ *  Created on: 13 Mar 2020
+ *  	Author: Norbert Bielak
  */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <stdlib.h>
 
 #include "common.h"
 
 
 
-volatile uint16_t Timers[TIMERS_CNT];
+volatile uint32_t Timers[TIMERS_CNT];
 
 timNames_t timNames;
 
@@ -23,7 +22,7 @@ void softTimInit(void){
 	TCCR2A |= (1<<WGM21);						 // CTC mode
 	TCCR2B |= (1<<CS20) | (1<<CS21) | (1<<CS22); // Prescaler 1024
 	TIMSK2 |= (1<<OCIE2A);						 // OC2 irq enable
-	OCR2A = 78;
+	OCR2A = 78;									 // 10ms time base for F_CPU = 8MHz
 }
 
 

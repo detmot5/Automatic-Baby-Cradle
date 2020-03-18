@@ -12,18 +12,19 @@
 
 #include "cradle.h"
 #include "eeprom.h"
+#include "common.h"
 //--------------------------------------------------------------------------
 //						    GLOBAL VARIABLES
 //--------------------------------------------------------------------------
 
 svParams_t servoParams_eep EEMEM;
 svParams_t servoParams;
-uint8_t stopFlag;
-volatile uint16_t Timer1,Timer2,Timer3,Timer4;
 
+bool stopFlag;
+bool isCradleTimActive;
 
-static uint16_t servo_pos;
-static uint16_t servo_actual_pos = _SERVO_MIN;
+static volatile uint16_t Timer;
+static uint16_t servo_pos = _SERVO_MIN;
 
 
 //--------------------------------------------------------------------------
@@ -34,23 +35,23 @@ static uint16_t servo_actual_pos = _SERVO_MIN;
 static int8_t servoDrive(void){
 	static uint8_t isDone;
 
-	if(servo_pos != servo_actual_pos){
+	if(servo_pos != servoParams.actualPos){
 		isDone = 0;
-		if(!Timer4 && !isDone){
+		if(!Timer && !isDone){
 				// speed - delay between each step
-			Timer4 = servoParams.speed;
+			Timer = servoParams.speed;
 			// going forward
-			if(servo_actual_pos < servo_pos && !stopFlag){
+			if(servoParams.actualPos < servo_pos && !stopFlag){
 					//increment on every step
-				servo_actual_pos++;
+				servoParams.actualPos++;
 					//set this value to servo
-				servoWrite(servo_actual_pos);
+				servoWrite(servoParams.actualPos);
 			}
 			//going back
 			else if(!stopFlag){
 					//decrement on every step
-				servo_actual_pos--;
-				servoWrite(servo_actual_pos);
+				servoParams.actualPos--;
+				servoWrite(servoParams.actualPos);
 			}
 		}
 	}
@@ -68,6 +69,7 @@ void cradleInit(void){
 		//**INITIALIZE SERVO PARAMETERS**
 	eeprom_read_duration();
 	eeprom_read_speed();
+	eeprom_read_actual_pos();
 
 		// **INIT SERVO TIMER**
 	TCCR1A |= (1<<WGM11);						// Fast PWM mode - TOP value - ICR1
@@ -75,6 +77,7 @@ void cradleInit(void){
 	TCCR1B |= (1<<CS11);						// Timer prescaler /8
 	TCCR1A |= (1<<COM1A1);						// OC1A active (non inverting mode)
 	ICR1 = usToTicks(_SERVO_REFRESH_INTERVAL);	// Set top value to 20000us
+	servo_pos = servoParams.duration+1;
 	SERVO_OUT;
 
 
@@ -91,12 +94,14 @@ void cradleInit(void){
 
 int8_t CRADLE_EVENT(void){
 	int8_t result;
+	if(!Timers[cradleDownCnt] && isCradleTimActive){
+		stopFlag = true;
+	}
 
-
-	if((result = servoDrive()) == 1){
+	if((result = servoDrive()) == 1 && !stopFlag){
 		servo_pos = _SERVO_MIN; 	// move done, go back
 	}
-	else if(result == 2){
+	else if(result == 2 && !stopFlag){
 		servo_pos = servoParams.duration;		//repeat
 	}
 	return result;
@@ -105,17 +110,9 @@ int8_t CRADLE_EVENT(void){
 
 
 
-
 //ISR - time base for servo speed control
 ISR(TIMER0_COMPA_vect){
 	uint16_t n;
-
-	n = Timer1;
-	if (n) Timer1 = --n;
-	n = Timer2;
-	if (n) Timer2 = --n;
-	n = Timer3;
-	if (n) Timer3 = --n;
-	n = Timer4;
-	if (n) Timer4 = --n;
+	n = Timer;
+	if (n) Timer = --n;
 }

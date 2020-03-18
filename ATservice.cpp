@@ -26,8 +26,10 @@
 
 extern svParams_t servoParams;
 extern uint8_t stopFlag;		// 0 - run  1 - stop
+extern bool isCradleTimActive;
 
-static inline void reset(){
+
+static inline void reset(void){
 	cli();
 	wdt_enable(0);
 	while(1);
@@ -55,6 +57,7 @@ atresult_t at_spd_service(uint8_t inout, char *params){
 			eeprom_update_speed();
 		}
 	}
+	else if(inout == 1 && stopFlag) USART_PutStr_P(_deviceStopped);
 	else if(inout == 0){
 		USART_PutStr_P(_atSpd);
 		USART_PutStr_P(_endl);
@@ -107,11 +110,14 @@ atresult_t at_stop_service(uint8_t inout, char *params){
 
 atresult_t at_fac_service(uint8_t inout, char *params){
 	if(inout == 2 || inout == 1){
-		if(inout == 1){
-			if(!strcmp("-a",params)){
-				_delay_ms(1500);
-				reset();
-			}
+		servoParams.speed = _SERVO_MIN_DELAY;
+		servoParams.duration = _SERVO_MIN;
+		eeprom_update_speed();
+		eeprom_update_duration();
+		if(inout == 1 && !strcmp("-a",params)){
+			eeprom_save_actual_pos();
+			_delay_ms(1500);
+			reset();
 		}
 	}
 
@@ -119,18 +125,40 @@ atresult_t at_fac_service(uint8_t inout, char *params){
 }
 
 atresult_t at_rst_service(uint8_t inout, char *params){
+	eeprom_save_actual_pos();
 	_delay_ms(1500);
 	reset();
 	return SUCCESS;
 }
 
 atresult_t at_tim_service(uint8_t inout, char *params){
+	int32_t time = atoi(params); //in seconds
+	static uint32_t timeRemaining;
+	static uint8_t pauseFlag = 0;
 	if(inout == 1){
-
+		if(time > 0){
+			stopFlag = false;
+			Timers[cradleDownCnt] = time * 100; // conversion to 10ms ticks
+			isCradleTimActive = true;
+		}
+		else{
+			isCradleTimActive = false;
+			stopFlag = false;
+			pauseFlag = 0;
+		}
 	}
-
+	else if(inout == 2 && isCradleTimActive){
+		pauseFlag ^= 1;
+		if(pauseFlag){
+			timeRemaining = Timers[cradleDownCnt];
+			stopFlag = 1;
+			USART_PutStr_P(_deviceStopped);
+		}
+		else{
+			Timers[cradleDownCnt] = timeRemaining;
+			stopFlag = 0;
+		}
+	}
 
 	return SUCCESS;
 }
-
-

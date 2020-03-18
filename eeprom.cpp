@@ -1,8 +1,8 @@
 /*
  * eeprom.cpp
  *
- *  Created on: 7 mar 2020
- *      Author: norbe
+ *  Created on: 7 Mar 2020
+ *      Author: Norbert Bielak
  */
 
 #include <avr/io.h>
@@ -21,6 +21,9 @@ void eeprom_update_speed(void){
 void eeprom_update_duration(void){
 	eeprom_write_word(&servoParams_eep.duration, servoParams.duration);
 }
+void eeprom_save_actual_pos(void){
+	eeprom_write_word(&servoParams_eep.actualPos, servoParams.actualPos);
+}
 
 void eeprom_read_speed(void){
 	register uint8_t temp = eeprom_read_byte(&servoParams_eep.speed);
@@ -34,6 +37,11 @@ void eeprom_read_duration(void){
 	if(temp >= _SERVO_MIN && temp <= _SERVO_MAX)servoParams.duration = temp;
 	else servoParams.duration = _SERVO_MIN;
 }
+void eeprom_read_actual_pos(void){
+	register uint16_t temp = eeprom_read_word(&servoParams_eep.actualPos);
 
+	if(temp >= _SERVO_MIN && temp <= _SERVO_MAX)servoParams.actualPos = temp;
+	else servoParams.actualPos = _SERVO_MIN;
+}
 
 

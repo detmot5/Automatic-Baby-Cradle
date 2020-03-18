@@ -15,7 +15,7 @@
 //					DECLARATIONS OF FUNCTIONS AND VARIABLES
 //--------------------------------------------------------------------------
 typedef enum {testLed = 0, cradleDownCnt = 1}timNames_t;
-extern volatile uint16_t Timers[TIMERS_CNT];
+extern volatile uint32_t Timers[TIMERS_CNT];
 void softTimInit(void);
 
 #endif /* COMMON_H_ */
