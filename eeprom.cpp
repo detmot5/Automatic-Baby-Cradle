@@ -12,8 +12,7 @@
 
 
 
-extern svParams_t servoParams_eep EEMEM;
-extern svParams_t servoParams;
+
 
 void eeprom_update_speed(void){
 	eeprom_write_byte(&servoParams_eep.speed, servoParams.speed);
@@ -24,6 +23,7 @@ void eeprom_update_duration(void){
 void eeprom_save_actual_pos(void){
 	eeprom_write_word(&servoParams_eep.actualPos, servoParams.actualPos);
 }
+
 
 void eeprom_read_speed(void){
 	register uint8_t temp = eeprom_read_byte(&servoParams_eep.speed);

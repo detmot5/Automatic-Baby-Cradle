@@ -10,8 +10,6 @@
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <avr/eeprom.h>
-#include <avr/pgmspace.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -24,12 +22,19 @@
 #include "cradle.h"
 #include "eeprom.h"
 
-extern svParams_t servoParams;
-extern uint8_t stopFlag;		// 0 - run  1 - stop
+
+extern bool stopFlag;		// 0 - run  1 - stop
 extern bool isCradleTimActive;
+
+enum inout {deviceAsk = 0, param = 1, noParam = 2};
 
 
 static inline void reset(void){
+		//Led blinking to singnalize start of reset procedure
+	for(uint8_t i = 0; i < 10; i++){
+		DBG_LED_TOG();
+		_delay_ms(100);
+	}
 	cli();
 	wdt_enable(0);
 	while(1);
@@ -48,23 +53,26 @@ atresult_t ati_service(uint8_t inout, char *params){
 atresult_t at_spd_service(uint8_t inout, char *params){
 	uint8_t spd;
 
-	if(inout == 1){
+	if(inout == param){
+		if(stopFlag){
+			USART_PutStr_P(_deviceStopped);
+			return ERROR;
+		}
 		if(!strlen(params)) return ERROR;
-		spd = atoi(params);
 
+		spd = atoi(params);
 		if(spd >= _SERVO_MIN_DELAY && spd <= _SERVO_MAX_DELAY){
 			servoParams.speed = spd;
 			eeprom_update_speed();
 		}
 	}
-	else if(inout == 1 && stopFlag) USART_PutStr_P(_deviceStopped);
-	else if(inout == 0){
+	else if(inout == deviceAsk){
 		USART_PutStr_P(_atSpd);
 		USART_PutStr_P(_endl);
 		USART_PutInt(servoParams.speed,dec);
 
 	}
-	else if(inout == 2){
+	else if(inout == noParam){
 		return ERROR;
 	}
 
@@ -74,33 +82,38 @@ atresult_t at_spd_service(uint8_t inout, char *params){
 atresult_t at_dur_service(uint8_t inout, char *params){
 	uint16_t dur;
 
-	if(inout == 1 && !stopFlag){
+	if(inout == param){
+		if(stopFlag){
+			USART_PutStr_P(_deviceStopped);
+			return ERROR;
+		}
 		if(!strlen(params)) return ERROR;
+
+
 		dur = atoi(params);
 		if(dur >= _SERVO_MIN && dur <= _SERVO_MAX){
 			servoParams.duration = dur;
 			eeprom_update_duration();
 		}
 	}
-	else if(inout == 1 && stopFlag) USART_PutStr_P(_deviceStopped);
-	else if(inout == 0){
+	else if(inout == deviceAsk){
 		USART_PutStr_P(_atDur);
 		USART_PutStr_P(_endl);
-		USART_PutInt(servoParams.duration,dec);
+		USART_PutInt(stopFlag,dec);
 
 	}
 
-	else if(inout == 2){
+	else if(inout == noParam){
 		return ERROR;
 	}
 
 	return SUCCESS;
 }
 atresult_t at_stop_service(uint8_t inout, char *params){
-	if(inout == 2){
+	if(inout == noParam){
 		stopFlag ^= 1;
 	}
-	else if(inout == 0){
+	else if(inout == deviceAsk){
 		USART_PutStr_P(_endl);
 		USART_PutInt(stopFlag,dec);
 	}
@@ -109,14 +122,13 @@ atresult_t at_stop_service(uint8_t inout, char *params){
 }
 
 atresult_t at_fac_service(uint8_t inout, char *params){
-	if(inout == 2 || inout == 1){
-		servoParams.speed = _SERVO_MIN_DELAY;
+	if(inout == noParam || inout == param){
+		servoParams.speed = _SERVO_MAX_DELAY;
 		servoParams.duration = _SERVO_MIN;
 		eeprom_update_speed();
 		eeprom_update_duration();
-		if(inout == 1 && !strcmp("-a",params)){
+		if(inout == param && !strcmp("-a",params)){
 			eeprom_save_actual_pos();
-			_delay_ms(1500);
 			reset();
 		}
 	}
@@ -126,7 +138,6 @@ atresult_t at_fac_service(uint8_t inout, char *params){
 
 atresult_t at_rst_service(uint8_t inout, char *params){
 	eeprom_save_actual_pos();
-	_delay_ms(1500);
 	reset();
 	return SUCCESS;
 }
@@ -134,9 +145,9 @@ atresult_t at_rst_service(uint8_t inout, char *params){
 atresult_t at_tim_service(uint8_t inout, char *params){
 	int32_t time = atoi(params); //in seconds
 	static uint32_t timeRemaining;
-	static uint8_t pauseFlag = 0;
-	if(inout == 1){
-		if(time > 0){
+	static bool pauseFlag = 0;
+	if(inout == param){
+		if(time >= 0){
 			stopFlag = false;
 			Timers[cradleDownCnt] = time * 100; // conversion to 10ms ticks
 			isCradleTimActive = true;
@@ -144,19 +155,19 @@ atresult_t at_tim_service(uint8_t inout, char *params){
 		else{
 			isCradleTimActive = false;
 			stopFlag = false;
-			pauseFlag = 0;
+			pauseFlag = false;
 		}
 	}
-	else if(inout == 2 && isCradleTimActive){
+	else if(inout == noParam && isCradleTimActive){
 		pauseFlag ^= 1;
 		if(pauseFlag){
 			timeRemaining = Timers[cradleDownCnt];
-			stopFlag = 1;
+			stopFlag = true;
 			USART_PutStr_P(_deviceStopped);
 		}
 		else{
 			Timers[cradleDownCnt] = timeRemaining;
-			stopFlag = 0;
+			stopFlag = false;
 		}
 	}
 

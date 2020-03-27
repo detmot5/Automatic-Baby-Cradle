@@ -16,7 +16,9 @@
 #include "AT_commands/AT_commands.h"
 #include "cradle.h"
 #include "common.h"
-extern svParams_t servoParams;
+#include "buttonService.h"
+
+
 void __init3(void) __attribute__ (( section( ".init3" ), naked, used ));
 void __init3(void){
 	//turn wdt off before program start
@@ -26,8 +28,11 @@ void __init3(void){
 }
 
 
+
 int main(void) {
 	char buff[20];
+
+
 
 
 		// Initializations
@@ -35,20 +40,20 @@ int main(void) {
 	softTimInit();
 	USART_BeginTransmission(__UBRR);
 	usart_rx_str_register_event_callback(parse_uart_data);
+	registerButtonsCallbacks();
 
 		// ---------------------
 
 	USART_PutStr_P(PSTR("Start\r\n"));
-	USART_PutInt(servoParams.duration,dec);
-	DDRD |= (1<<PD7);
-	PORTD |= (1<<PD7);
+	DBG_LED_DIR_OUT();
+	DBG_LED_ON();
 
 	while(1){
 		USART_RX_STR_EVENT(buff);
 		CRADLE_EVENT();
-			//test led blinking
+
 		if(!Timers[testLed]){
-			PORTD ^= (1<<PD7);
+			DBG_LED_TOG();
 			Timers[testLed] = 50;
 		}
 	}

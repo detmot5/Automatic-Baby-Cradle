@@ -8,13 +8,26 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include "MicroSwitch/MicroSwitch.h"
 #include "common.h"
+
+
+
 
 
 
 volatile uint32_t Timers[TIMERS_CNT];
 
-timNames_t timNames;
+
+	// buttons objects, only in first one we have to pass time base variable
+MicroSwitch ButtonUp(&UP_BUTTON_INPUT, UP_BUTTON_PIN, &Timers[buttonsTimeBase]);
+MicroSwitch ButtonDown(&DOWN_BUTTON_INPUT, DOWN_BUTTON_PIN);
+
+MicroSwitch ButtonSwitch(&SWITCH_BUTTON_INPUT, SWITCH_BUTTON_PIN);
+MicroSwitch ButtonReset(&RESET_BUTTON_INPUT, RESET_BUTTON_PIN);
+
+
+
 
 void softTimInit(void){
 	// **TIMER FOR 10ms TIME BASE**
@@ -28,7 +41,7 @@ void softTimInit(void){
 
 // **ISR - 10ms TIME BASE**
 ISR(TIMER2_COMPA_vect){
-	uint16_t n;
+	uint32_t n;
 	for(uint8_t i = 0; i < TIMERS_CNT; i++){
 		n = Timers[i];
 		if(n) Timers[i] = --n;

@@ -3,3 +3,4 @@ UARTlib
 Release
 AT_commands
 .cproject
+MicroSwitchEvent.cpp

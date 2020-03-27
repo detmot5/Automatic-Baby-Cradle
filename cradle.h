@@ -48,7 +48,8 @@ typedef struct {
 //--------------------------------------------------------------------------
 
 
-
+extern svParams_t servoParams_eep;
+extern svParams_t servoParams;
 void cradleInit(void);
 int8_t CRADLE_EVENT(void);
 
