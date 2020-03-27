@@ -8,7 +8,10 @@ This is my second project. I do it with knowledge about lot's of mistakes that I
 
 ### This is a device which is a dream come true for all parents ;) 
 
-It is an attachment to baby cradle which can rock it automatically using servo motor. User will be able to control it by Android app via Bluetooth or using rotary enconder and LED display.
+It is an attachment to baby cradle which can rock it automatically using servo motor. User will be able to control it by Android app via Bluetooth or using micro switches and LED display.
+
+First i wanted to control this device using rotary encoder instead of buttons
+But i realized it would be more comfortable to use and easier to develop.
 
 There is few parameters which can be controlled:
  1. Speed
