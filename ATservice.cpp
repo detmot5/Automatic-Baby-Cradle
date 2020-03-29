@@ -29,16 +29,6 @@ extern bool isCradleTimActive;
 enum inout {deviceAsk = 0, param = 1, noParam = 2};
 
 
-static inline void reset(void){
-		//Led blinking to singnalize start of reset procedure
-	for(uint8_t i = 0; i < 10; i++){
-		DBG_LED_TOG();
-		_delay_ms(100);
-	}
-	cli();
-	wdt_enable(0);
-	while(1);
-}
 
 
 atresult_t at_service(uint8_t inout, char *params){
@@ -61,10 +51,7 @@ atresult_t at_spd_service(uint8_t inout, char *params){
 		if(!strlen(params)) return ERROR;
 
 		spd = atoi(params);
-		if(spd >= _SERVO_MIN_DELAY && spd <= _SERVO_MAX_DELAY){
-			servoParams.speed = spd;
-			eeprom_update_speed();
-		}
+		if(cradleSetParams(speed,spd) < 0) return ERROR;
 	}
 	else if(inout == deviceAsk){
 		USART_PutStr_P(_atSpd);
@@ -79,7 +66,7 @@ atresult_t at_spd_service(uint8_t inout, char *params){
 
 	return SUCCESS;
 }
-atresult_t at_dur_service(uint8_t inout, char *params){
+atresult_t at_range_service(uint8_t inout, char *params){
 	uint16_t dur;
 
 	if(inout == param){
@@ -91,10 +78,7 @@ atresult_t at_dur_service(uint8_t inout, char *params){
 
 
 		dur = atoi(params);
-		if(dur >= _SERVO_MIN && dur <= _SERVO_MAX){
-			servoParams.duration = dur;
-			eeprom_update_duration();
-		}
+		if(cradleSetParams(range,dur) < 0) return ERROR;
 	}
 	else if(inout == deviceAsk){
 		USART_PutStr_P(_atDur);
@@ -128,7 +112,6 @@ atresult_t at_fac_service(uint8_t inout, char *params){
 		eeprom_update_speed();
 		eeprom_update_duration();
 		if(inout == param && !strcmp("-a",params)){
-			eeprom_save_actual_pos();
 			reset();
 		}
 	}
@@ -137,7 +120,6 @@ atresult_t at_fac_service(uint8_t inout, char *params){
 }
 
 atresult_t at_rst_service(uint8_t inout, char *params){
-	eeprom_save_actual_pos();
 	reset();
 	return SUCCESS;
 }

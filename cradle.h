@@ -1,8 +1,14 @@
 /*
+ *
+ * d
+ *
+ *
+ *
+ *
  * cradle.h
  *
- *  Created on: 27 lut 2020
- *      Author: norbe
+ *  Created on: 27 Feb 2020
+ *      Author: Norbert Bielak
  */
 
 #ifndef CRADLE_H_
@@ -16,9 +22,9 @@
 #define _SERVO_MAX						2200					// Max value of PWM duration
 
 #define _SERVO_MIN_DELAY				1						// Delay between each servo step
-#define _SERVO_MAX_DELAY				7
+#define _SERVO_MAX_DELAY				9
 
-#define SERVO_OUT DDRB |= (1<<PB1);								// OCR1 pin out (atmega88)
+#define SERVO_OUT() DDRB |= (1<<PB1)								// OCR1 pin out (atmega88)
 
 #define servoWrite(_dur)	OCR1A = usToTicks(_dur)
 
@@ -34,14 +40,17 @@
 #define usToTicks(_us)  ((_TICKS_PER_US * _us)/8)
 
 
-
+	// "duration" is the value of servo angle
+	// as a PWM period time
 typedef struct {
 	uint8_t speed;
 	uint16_t duration;
 	uint16_t actualPos;
 }svParams_t;
 
-
+	// "range" is value of duration mapped to 1 - 9 range
+	// to easier control
+typedef enum {speed,range} svParamsEnum_t;
 
 //--------------------------------------------------------------------------
 //					DECLARATIONS OF FUNCTIONS AND VARIABLES
@@ -53,5 +62,7 @@ extern svParams_t servoParams;
 void cradleInit(void);
 int8_t CRADLE_EVENT(void);
 
+int8_t cradleSetParams(svParamsEnum_t cradleParam, uint8_t value);
+uint8_t cradleGetParams(svParamsEnum_t cradleParam);
 
 #endif /* CRADLE_H_ */

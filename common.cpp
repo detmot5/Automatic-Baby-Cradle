@@ -7,10 +7,12 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/wdt.h>
+#include <util/delay.h>
 
 #include "MicroSwitch/MicroSwitch.h"
 #include "common.h"
-
+#include "eeprom.h"
 
 
 
@@ -37,6 +39,20 @@ void softTimInit(void){
 	TIMSK2 |= (1<<OCIE2A);						 // OC2 irq enable
 	OCR2A = 78;									 // 10ms time base for F_CPU = 8MHz
 }
+
+
+void reset(void){
+		//Led blinking to singnalize start of reset procedure
+	for(uint8_t i = 0; i < 10; i++){
+		DBG_LED_TOG();
+		_delay_ms(100);
+	}
+	eeprom_save_actual_pos();
+	cli();
+	wdt_enable(0);
+	while(1);
+}
+
 
 
 // **ISR - 10ms TIME BASE**

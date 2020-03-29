@@ -10,6 +10,7 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 
+#include "LCD/lcd44780.h"
 #include "cradle.h"
 #include "eeprom.h"
 #include "common.h"
@@ -30,6 +31,12 @@ static uint16_t servo_pos = _SERVO_MIN;
 //--------------------------------------------------------------------------
 //						  STATIC FUNCTIONS
 //--------------------------------------------------------------------------
+
+	// from Arduino
+static inline int32_t map(int32_t x, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max) {
+return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 
 
 static int8_t servoDrive(void){
@@ -77,8 +84,9 @@ void cradleInit(void){
 	TCCR1B |= (1<<CS11);						// Timer prescaler /8
 	TCCR1A |= (1<<COM1A1);						// OC1A active (non inverting mode)
 	ICR1 = usToTicks(_SERVO_REFRESH_INTERVAL);	// Set top value to 20000us
-	servo_pos = servoParams.duration+1;
-	SERVO_OUT;
+	servoWrite(servoParams.actualPos);
+
+	SERVO_OUT();
 
 
 		// **INIT TIME BASE TIMER**
@@ -107,6 +115,49 @@ int8_t CRADLE_EVENT(void){
 	return result;
 }
 
+
+	// Function to set parameters of cradle
+	// input - target(range or speed), value from 0-9
+	// output: 0 for correct value and -1 for wrong
+int8_t cradleSetParams(svParamsEnum_t cradleParam, uint8_t value){
+	int8_t result;
+	if(value >= 1 && value <= 9){
+		result = 0;
+		switch(cradleParam){
+		case range:
+			servoParams.duration = map(value, 1 ,9, _SERVO_MIN,_SERVO_MAX);
+			eeprom_update_duration();
+			lcd_locate(1,0);
+			lcd_int(value);
+			break;
+
+		case speed:
+			servoParams.speed = map(value, 1, 9, _SERVO_MAX_DELAY, _SERVO_MIN_DELAY); //invert values
+			eeprom_update_speed();
+			lcd_locate(0,0);
+			lcd_int(value);
+			break;
+		}
+		// there will be also code to print it on screen
+	}
+	else result = -1;
+	return result;
+}
+
+uint8_t cradleGetParams(svParamsEnum_t cradleParam){
+	uint8_t value = 0;
+	switch(cradleParam){
+	case range:
+		value = map(servoParams.duration, _SERVO_MIN, _SERVO_MAX, 1, 9);
+		break;
+
+	case speed:
+		value = map(servoParams.speed, _SERVO_MAX_DELAY, _SERVO_MIN_DELAY, 1, 9);
+		break;
+	}
+
+	return value;
+}
 
 
 

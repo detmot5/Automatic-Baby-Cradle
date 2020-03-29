@@ -9,6 +9,7 @@
 #include <avr/io.h>
 
 #include "MicroSwitch/MicroSwitch.h"
+#include "LCD/lcd44780.h"
 #include "common.h"
 #include "cradle.h"
 
@@ -19,43 +20,62 @@
 #define DURATION 1
 
 
-enum value {speed,duration};
+
 static uint8_t changingValue;
 
-//static uint8_t changingValue;
 
-
-
-
-
-	// from Arduino
-static inline uint32_t map(uint32_t x, uint32_t in_min, uint32_t in_max, uint32_t out_min, uint32_t out_max) {
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
 
 
 static void buttonSwitchHandler(void){
 
 	changingValue ^= 1;
+	DBG_LED_TOG();
 }
 
 static void buttonResetHandler(void){
-
+	reset();
 }
 
 static void buttonUpHandler(void){
+	int8_t mappedValue;
+
 	switch(changingValue){
 	case speed:
-
+		mappedValue = cradleGetParams(speed);
+		if(mappedValue > 0 && mappedValue <= 9){
+			mappedValue += 1;
+			cradleSetParams(speed, mappedValue);
+		}
 		break;
-	case duration:
-
+	case range:
+		mappedValue = cradleGetParams(range);
+		if(mappedValue >= 1 && mappedValue <= 9){
+			mappedValue += 1;
+			cradleSetParams(range, mappedValue);
+		}
 		break;
 	}
 }
 
 static void buttonDownHandler(void){
+	int8_t mappedValue;
 
+	switch(changingValue){
+	case speed:
+		mappedValue = cradleGetParams(speed);
+		if(mappedValue >= 1 && mappedValue <= 9){
+			mappedValue -= 1;
+			cradleSetParams(speed, mappedValue);
+		}
+		break;
+	case range:
+		mappedValue = cradleGetParams(range);
+		if(mappedValue >= 1 && mappedValue <= 9){
+			mappedValue -= 1;
+			cradleSetParams(range, mappedValue);
+		}
+		break;
+	}
 }
 
 
@@ -65,7 +85,10 @@ void registerButtonsCallbacks(void){
 	ButtonReset.registerPressEventCallback(buttonResetHandler);
 
 	ButtonUp.registerPressEventCallback(buttonUpHandler);
+	ButtonUp.registerHoldEventCallback(buttonUpHandler);
+
 	ButtonDown.registerPressEventCallback(buttonDownHandler);
+	ButtonDown.registerHoldEventCallback(buttonDownHandler);
 
 }
 
