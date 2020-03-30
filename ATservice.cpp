@@ -1,8 +1,8 @@
 /*
  * ATservice.cpp
  *
- *  Created on: 7 mar 2020
- *      Author: norbe
+ *  Created on: 7 Mar 2020
+ *      Author: Norbert Bielak
  */
 
 
@@ -30,6 +30,13 @@ enum inout {deviceAsk = 0, param = 1, noParam = 2};
 
 
 
+static inline bool isNumber(char *str){
+	while(*(str++)){
+		if(*str && (*str < '0' || *str > '9')) return false;
+	}
+	return true;
+}
+
 
 atresult_t at_service(uint8_t inout, char *params){
 	USART_PutStr_P(_OK);
@@ -48,7 +55,8 @@ atresult_t at_spd_service(uint8_t inout, char *params){
 			USART_PutStr_P(_deviceStopped);
 			return ERROR;
 		}
-		if(!strlen(params)) return ERROR;
+
+		if(!strlen(params) || !isNumber(params)) return ERROR;
 
 		spd = atoi(params);
 		if(cradleSetParams(speed,spd) < 0) return ERROR;
@@ -74,7 +82,7 @@ atresult_t at_range_service(uint8_t inout, char *params){
 			USART_PutStr_P(_deviceStopped);
 			return ERROR;
 		}
-		if(!strlen(params)) return ERROR;
+		if(!strlen(params) || !isNumber(params)) return ERROR;
 
 
 		dur = atoi(params);
@@ -105,6 +113,7 @@ atresult_t at_stop_service(uint8_t inout, char *params){
 	return SUCCESS;
 }
 
+// TODO
 atresult_t at_fac_service(uint8_t inout, char *params){
 	if(inout == noParam || inout == param){
 		servoParams.speed = _SERVO_MAX_DELAY;
@@ -129,6 +138,7 @@ atresult_t at_tim_service(uint8_t inout, char *params){
 	static uint32_t timeRemaining;
 	static bool pauseFlag = 0;
 	if(inout == param){
+		if(!strlen(params) || !isNumber(params)) return ERROR;
 		if(time >= 0){
 			stopFlag = false;
 			Timers[cradleDownCnt] = time * 100; // conversion to 10ms ticks
@@ -155,3 +165,28 @@ atresult_t at_tim_service(uint8_t inout, char *params){
 
 	return SUCCESS;
 }
+
+atresult_t at_slptim_service(uint8_t inout, char *params){
+
+	uint32_t time;
+	if(inout == param){
+		if(!strlen(params) || !isNumber(params)) return ERROR;
+		time = atoi(params);
+		//if(stopFlag)
+	}
+
+
+
+
+
+
+	return SUCCESS;
+}
+
+
+
+
+
+
+
+

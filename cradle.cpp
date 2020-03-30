@@ -104,6 +104,10 @@ int8_t CRADLE_EVENT(void){
 	int8_t result;
 	if(!Timers[cradleDownCnt] && isCradleTimActive){
 		stopFlag = true;
+		if(!Timers[timeToSleep]){
+			sleep();
+		}
+
 	}
 
 	if((result = servoDrive()) == 1 && !stopFlag){

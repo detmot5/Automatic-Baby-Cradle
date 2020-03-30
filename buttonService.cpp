@@ -7,6 +7,7 @@
 
 
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 
 #include "MicroSwitch/MicroSwitch.h"
 #include "LCD/lcd44780.h"
@@ -16,10 +17,6 @@
 
 
 
-#define SPEED 0
-#define DURATION 1
-
-
 
 static uint8_t changingValue;
 
@@ -27,7 +24,6 @@ static uint8_t changingValue;
 
 
 static void buttonSwitchHandler(void){
-
 	changingValue ^= 1;
 	DBG_LED_TOG();
 }
@@ -35,6 +31,14 @@ static void buttonSwitchHandler(void){
 static void buttonResetHandler(void){
 	reset();
 }
+	// turn on sleep mode
+static void buttonResetHoldHandler(void){
+	lcd_cls();
+	lcd_str_P(PSTR("sleep"));
+	lcd_LED(0);
+	sleep();
+}
+
 
 static void buttonUpHandler(void){
 	int8_t mappedValue;
@@ -82,7 +86,9 @@ static void buttonDownHandler(void){
 
 void registerButtonsCallbacks(void){
 	ButtonSwitch.registerPressEventCallback(buttonSwitchHandler);
+
 	ButtonReset.registerPressEventCallback(buttonResetHandler);
+	ButtonReset.registerHoldEventCallback(buttonResetHoldHandler);
 
 	ButtonUp.registerPressEventCallback(buttonUpHandler);
 	ButtonUp.registerHoldEventCallback(buttonUpHandler);

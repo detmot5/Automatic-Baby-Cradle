@@ -1,8 +1,8 @@
 /*
  * buttonService.h
  *
- *  Created on: 27 mar 2020
- *      Author: norbe
+ *  Created on: 27 Mar 2020
+ *      Author: Norbert Bielak
  */
 
 #ifndef BUTTONSERVICE_H_

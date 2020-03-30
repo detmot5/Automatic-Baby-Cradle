@@ -45,8 +45,9 @@ extern MicroSwitch ButtonSwitch;
 extern MicroSwitch ButtonReset;
 
 
-typedef enum {testLed = 0, cradleDownCnt = 1, buttonsTimeBase = 2}timNames_t;
+typedef enum {testLed = 0, cradleDownCnt = 1, buttonsTimeBase = 2, timeToSleep = 3}timNames_t;
 extern volatile uint32_t Timers[TIMERS_CNT];
-void softTimInit(void);
+void periphInit(void);
 void reset(void);
+void sleep(void);
 #endif /* COMMON_H_ */

@@ -1,10 +1,5 @@
 /*
  *
- * d
- *
- *
- *
- *
  * cradle.h
  *
  *  Created on: 27 Feb 2020
@@ -46,6 +41,7 @@ typedef struct {
 	uint8_t speed;
 	uint16_t duration;
 	uint16_t actualPos;
+	uint32_t sleepTime;
 }svParams_t;
 
 	// "range" is value of duration mapped to 1 - 9 range

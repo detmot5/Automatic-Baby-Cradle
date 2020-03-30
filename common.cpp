@@ -8,8 +8,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+#include <avr/sleep.h>
 #include <util/delay.h>
 
+#include "LCD/lcd44780.h"
 #include "MicroSwitch/MicroSwitch.h"
 #include "common.h"
 #include "eeprom.h"
@@ -31,13 +33,18 @@ MicroSwitch ButtonReset(&RESET_BUTTON_INPUT, RESET_BUTTON_PIN);
 
 
 
-void softTimInit(void){
+void periphInit(void){
 	// **TIMER FOR 10ms TIME BASE**
 
 	TCCR2A |= (1<<WGM21);						 // CTC mode
 	TCCR2B |= (1<<CS20) | (1<<CS21) | (1<<CS22); // Prescaler 1024
 	TIMSK2 |= (1<<OCIE2A);						 // OC2 irq enable
 	OCR2A = 78;									 // 10ms time base for F_CPU = 8MHz
+
+		// disable analog comparator
+	ADCSRB |= (1<<ACME);
+		//enable sleep mode
+	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 }
 
 
@@ -55,6 +62,14 @@ void reset(void){
 
 
 
+void sleep(void){
+		// enable PCINT2 to wake up uC by any button
+	PCICR |= (1<<PCIE2);
+	PCMSK2 |= (1<<PCINT19) | (1<<PCINT20) | (1<<PCINT21);
+	sleep_mode();
+}
+
+
 // **ISR - 10ms TIME BASE**
 ISR(TIMER2_COMPA_vect){
 	uint32_t n;
@@ -64,3 +79,15 @@ ISR(TIMER2_COMPA_vect){
 	}
 
 }
+
+ISR(PCINT2_vect){
+		//disable PCINT
+	PCICR = 0;
+	PCMSK2 = 0;
+	lcd_cls();
+	lcd_LED(1);
+}
+
+
+
+

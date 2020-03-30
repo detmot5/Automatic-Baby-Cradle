@@ -21,5 +21,6 @@ atresult_t at_stop_service(uint8_t inout, char* params);		// Stop cradle in any 
 atresult_t at_fac_service(uint8_t inout, char *params);			// Restore factory settings
 atresult_t at_rst_service(uint8_t inout, char *params);			// Reset device
 atresult_t at_tim_service(uint8_t inout, char *params);			// Turn off device after a specified time
+atresult_t at_slptim_service(uint8_t inout, char *params);		// Set time which after device goes into sleep mode
 
 #endif /* ATSERVICE_H_ */

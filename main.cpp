@@ -37,7 +37,7 @@ int main(void) {
 
 		// Initializations
 	cradleInit();
-	softTimInit();
+	periphInit();
 	lcd_init();
 	USART_BeginTransmission(__UBRR);
 	usart_rx_str_register_event_callback(parse_uart_data);
@@ -52,10 +52,13 @@ int main(void) {
 	while(1){
 		USART_RX_STR_EVENT(buff);
 		CRADLE_EVENT();
+
 		ButtonUp.Event();
-		ButtonSwitch.Event();
 		ButtonDown.Event();
+
+		ButtonSwitch.Event();
 		ButtonReset.Event();
+
 		if(!Timers[testLed]){
 			//DBG_LED_TOG();
 			Timers[testLed] = 50;
