@@ -40,10 +40,10 @@ MicroSwitch::MicroSwitch(volatile uint8_t *_PINx, uint8_t _pin, volatile uint32_
 
 
 void MicroSwitch::registerPressEventCallback(void (*callback)()){
-	PressEventCallback = callback;
+	if(callback)PressEventCallback = callback;
 }
 void MicroSwitch::registerHoldEventCallback(void (*callback)()){
-	HoldEventCallback = callback;
+	if(callback)HoldEventCallback = callback;
 }
 
 
