@@ -23,6 +23,7 @@ svParams_t servoParams;
 
 bool stopFlag;
 bool isCradleTimActive;
+bool goSleep;
 
 static volatile uint16_t Timer;
 static uint16_t servo_pos = _SERVO_MIN;
@@ -70,6 +71,24 @@ static int8_t servoDrive(void){
 	return isDone;
 }
 
+static void stopEvent(void){
+	if(!Timers[cradleDownCnt] && isCradleTimActive){
+		stopFlag = true;
+		if(!goSleep){
+			goSleep = true;
+			Timers[timeToSleep] = servoParams.secondsToEnterSleep*100; //convert to 10ms
+		}
+		else if(!Timers[timeToSleep]){ // if time to enter sleep elapsed
+			stopFlag = false;
+			isCradleTimActive = false;
+			goSleep = false;
+			sleep();
+		}
+
+	}
+}
+
+
 //--------------------------------------------------------------------------
 
 void cradleInit(void){
@@ -77,6 +96,7 @@ void cradleInit(void){
 	eeprom_read_duration();
 	eeprom_read_speed();
 	eeprom_read_actual_pos();
+	eeprom_read_time_to_sleep();
 
 		// **INIT SERVO TIMER**
 	TCCR1A |= (1<<WGM11);						// Fast PWM mode - TOP value - ICR1
@@ -102,13 +122,9 @@ void cradleInit(void){
 
 int8_t CRADLE_EVENT(void){
 	int8_t result;
-	if(!Timers[cradleDownCnt] && isCradleTimActive){
-		stopFlag = true;
-		if(!Timers[timeToSleep]){
-			sleep();
-		}
 
-	}
+	stopEvent();
+
 
 	if((result = servoDrive()) == 1 && !stopFlag){
 		servo_pos = _SERVO_MIN; 	// move done, go back

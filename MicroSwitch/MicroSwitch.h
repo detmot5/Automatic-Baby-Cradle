@@ -20,14 +20,15 @@
 #ifndef MICROSWITCH_MICROSWITCH_H_
 #define MICROSWITCH_MICROSWITCH_H_
 
-#define DEFAULT_HOLD_TIME 100		// 150 of 10ms ticks - 1500ms
+#define DEFAULT_HOLD_TIME 100		// 10 of 10ms ticks - 1000ms
 #define DEFAULT_REP_TIME 20			// 20 of 10ms ticks - 200ms
 
 
 class MicroSwitch{
 public:
-	MicroSwitch(volatile uint8_t* _PINx, uint8_t _pin, volatile uint32_t *timeBase = 0,
-			uint8_t _holdTime = DEFAULT_HOLD_TIME, uint8_t _holdRepeatTime = DEFAULT_REP_TIME);
+	MicroSwitch(volatile uint8_t* _PINx, uint8_t _pin,
+			uint8_t _holdTime = DEFAULT_HOLD_TIME, uint8_t _holdRepeatTime = DEFAULT_REP_TIME,
+			volatile uint32_t *timeBase = 0);
 
 	void registerPressEventCallback(void (*callback)());
 	void registerHoldEventCallback(void (*callback)());

@@ -23,8 +23,7 @@
 #include "eeprom.h"
 
 
-extern bool stopFlag;		// 0 - run  1 - stop
-extern bool isCradleTimActive;
+
 
 enum inout {deviceAsk = 0, param = 1, noParam = 2};
 
@@ -113,13 +112,10 @@ atresult_t at_stop_service(uint8_t inout, char *params){
 	return SUCCESS;
 }
 
-// TODO
 atresult_t at_fac_service(uint8_t inout, char *params){
 	if(inout == noParam || inout == param){
-		servoParams.speed = _SERVO_MAX_DELAY;
-		servoParams.duration = _SERVO_MIN;
-		eeprom_update_speed();
-		eeprom_update_duration();
+		cradleSetParams(speed, 1);
+		cradleSetParams(range, 1);
 		if(inout == param && !strcmp("-a",params)){
 			reset();
 		}
@@ -172,13 +168,15 @@ atresult_t at_slptim_service(uint8_t inout, char *params){
 	if(inout == param){
 		if(!strlen(params) || !isNumber(params)) return ERROR;
 		time = atoi(params);
-		//if(stopFlag)
+		servoParams.secondsToEnterSleep = time;
 	}
 
-
-
-
-
+	else if(inout == noParam){
+		return ERROR;
+	}
+	else if(inout == deviceAsk){
+		return ERROR;
+	}
 
 	return SUCCESS;
 }

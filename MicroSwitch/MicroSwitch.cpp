@@ -19,8 +19,8 @@
 
 volatile uint32_t *MicroSwitch::timeBase10Ms = 0;
 
-MicroSwitch::MicroSwitch(volatile uint8_t *_PINx, uint8_t _pin, volatile uint32_t *timeBase,
-		uint8_t _holdTime, uint8_t _holdRepeatTime){
+MicroSwitch::MicroSwitch(volatile uint8_t *_PINx, uint8_t _pin,
+		uint8_t _holdTime, uint8_t _holdRepeatTime, volatile uint32_t *timeBase){
 	PINx = _PINx;
 	pin = _pin;
 	pinMask = (1<<_pin);

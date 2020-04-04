@@ -7,6 +7,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <avr/wdt.h>
 #include <avr/sleep.h>
 #include <util/delay.h>
@@ -66,6 +67,9 @@ void sleep(void){
 		// enable PCINT2 to wake up uC by any button
 	PCICR |= (1<<PCIE2);
 	PCMSK2 |= (1<<PCINT19) | (1<<PCINT20) | (1<<PCINT21);
+	lcd_cls();
+	lcd_str_P(PSTR("sleep"));
+	lcd_LED(0);
 	sleep_mode();
 }
 

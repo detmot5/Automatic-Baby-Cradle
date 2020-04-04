@@ -19,6 +19,8 @@
 #define _SERVO_MIN_DELAY				1						// Delay between each servo step
 #define _SERVO_MAX_DELAY				9
 
+#define _DEFAULT_TIME_TO_SLEEP 			5
+
 #define SERVO_OUT() DDRB |= (1<<PB1)								// OCR1 pin out (atmega88)
 
 #define servoWrite(_dur)	OCR1A = usToTicks(_dur)
@@ -41,7 +43,7 @@ typedef struct {
 	uint8_t speed;
 	uint16_t duration;
 	uint16_t actualPos;
-	uint32_t sleepTime;
+	uint16_t secondsToEnterSleep;
 }svParams_t;
 
 	// "range" is value of duration mapped to 1 - 9 range
@@ -55,6 +57,10 @@ typedef enum {speed,range} svParamsEnum_t;
 
 extern svParams_t servoParams_eep;
 extern svParams_t servoParams;
+
+extern bool stopFlag;		// 0 - run  1 - stop
+extern bool isCradleTimActive;
+
 void cradleInit(void);
 int8_t CRADLE_EVENT(void);
 
