@@ -28,7 +28,7 @@ In this project I implemented AT_comannds handling using events and callbacks, t
 * ATI - When sent device prints us information about it.
 * AT+RST - Reset device
 * AT+SPD - Changing speed of rocking
-* AT+DUR - Changing range of rocking 
+* AT+RANGE - Changing range of rocking 
 * AT+STOP - Stops device immediatelly 
 * AT+TIM - Turns on the cradle for a specified time
 * AT+FAC - Restore factory settings
