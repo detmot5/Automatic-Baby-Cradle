@@ -28,14 +28,18 @@ static void buttonSwitchHandler(void){
 	DBG_LED_TOG();
 }
 
+static void buttonSwitchHoldHandler(void){
+	stopFlag ^= 1;
+}
+
+
 static void buttonResetHandler(void){
 	reset();
 }
-	// turn on sleep mode
+
+
 static void buttonResetHoldHandler(void){
-	lcd_cls();
-	lcd_str_P(PSTR("sleep"));
-	lcd_LED(0);
+	// turn on sleep mode
 	sleep();
 }
 
@@ -86,6 +90,7 @@ static void buttonDownHandler(void){
 
 void registerButtonsCallbacks(void){
 	ButtonSwitch.registerPressEventCallback(buttonSwitchHandler);
+	ButtonSwitch.registerHoldEventCallback(buttonSwitchHoldHandler);
 
 	ButtonReset.registerPressEventCallback(buttonResetHandler);
 	ButtonReset.registerHoldEventCallback(buttonResetHoldHandler);

@@ -25,10 +25,11 @@ volatile uint32_t Timers[TIMERS_CNT];
 
 
 	// buttons objects, only in first one we have to pass time base variable
-MicroSwitch ButtonUp(&UP_BUTTON_INPUT, UP_BUTTON_PIN, &Timers[buttonsTimeBase]);
-MicroSwitch ButtonDown(&DOWN_BUTTON_INPUT, DOWN_BUTTON_PIN);
+MicroSwitch ButtonSwitch(&SWITCH_BUTTON_INPUT, SWITCH_BUTTON_PIN,DEFAULT_HOLD_TIME, 255, &Timers[buttonsTimeBase]);
 
-MicroSwitch ButtonSwitch(&SWITCH_BUTTON_INPUT, SWITCH_BUTTON_PIN);
+MicroSwitch ButtonUp(&UP_BUTTON_INPUT, UP_BUTTON_PIN,50);
+MicroSwitch ButtonDown(&DOWN_BUTTON_INPUT, DOWN_BUTTON_PIN,50);
+
 MicroSwitch ButtonReset(&RESET_BUTTON_INPUT, RESET_BUTTON_PIN);
 
 
