@@ -10,10 +10,11 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 
-#include "LCD/lcd44780.h"
+
 #include "cradle.h"
 #include "eeprom.h"
 #include "common.h"
+#include "d_Led.h"
 //--------------------------------------------------------------------------
 //						    GLOBAL VARIABLES
 //--------------------------------------------------------------------------
@@ -72,11 +73,14 @@ static int8_t servoDrive(void){
 }
 
 static void stopEvent(void){
+
+	dLED::dP_blink(stopFlag);
+
 	if(!Timers[cradleDownCnt] && isCradleTimActive){
 		stopFlag = true;
 		if(!goSleep){
 			goSleep = true;
-			Timers[timeToSleep] = servoParams.secondsToEnterSleep*100; //convert to 10ms
+			Timers[timeToSleep] = servoParams.secondsToEnterSleep*100; //convert to 10ms ticks
 		}
 		else if(!Timers[timeToSleep]){ // if time to enter sleep elapsed
 			stopFlag = false;
@@ -97,6 +101,7 @@ void cradleInit(void){
 	eeprom_read_speed();
 	eeprom_read_actual_pos();
 	eeprom_read_time_to_sleep();
+	stopFlag = true;
 
 		// **INIT SERVO TIMER**
 	TCCR1A |= (1<<WGM11);						// Fast PWM mode - TOP value - ICR1
@@ -107,7 +112,6 @@ void cradleInit(void){
 	servoWrite(servoParams.actualPos);
 
 	SERVO_OUT();
-
 
 		// **INIT TIME BASE TIMER**
 	TCCR0A |= (1<<WGM01);						// CTC mode
@@ -147,15 +151,13 @@ int8_t cradleSetParams(svParamsEnum_t cradleParam, uint8_t value){
 		case range:
 			servoParams.duration = map(value, 1 ,9, _SERVO_MIN,_SERVO_MAX);
 			eeprom_update_duration();
-			lcd_locate(1,0);
-			lcd_int(value);
+			dLED::print(value);
 			break;
 
 		case speed:
 			servoParams.speed = map(value, 1, 9, _SERVO_MAX_DELAY, _SERVO_MIN_DELAY); //invert values
 			eeprom_update_speed();
-			lcd_locate(0,0);
-			lcd_int(value);
+			dLED::print(value);
 			break;
 		}
 		// there will be also code to print it on screen

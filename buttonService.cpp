@@ -10,10 +10,9 @@
 #include <avr/pgmspace.h>
 
 #include "MicroSwitch/MicroSwitch.h"
-#include "LCD/lcd44780.h"
 #include "common.h"
 #include "cradle.h"
-
+#include "d_Led.h"
 
 
 
@@ -25,7 +24,20 @@ static uint8_t changingValue;
 
 static void buttonSwitchHandler(void){
 	changingValue ^= 1;
-	DBG_LED_TOG();
+
+	// For speed manipulating option the S
+	// For range manipulating option the "A" symbol is displayed
+	switch(changingValue){
+	case speed:
+		dLED::print(cradleGetParams(speed));
+		dLED::displayOnTop(SPEED_SYMBOL,1000);
+		break;
+
+	case range:
+		dLED::print(cradleGetParams(range));
+		dLED::displayOnTop(RANGE_SYMBOL,1000);
+		break;
+	}
 }
 
 static void buttonSwitchHoldHandler(void){

@@ -11,12 +11,13 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 
-#include "LCD/lcd44780.h"
+
 #include "UARTlib/uart.h"
 #include "AT_commands/AT_commands.h"
 #include "cradle.h"
 #include "common.h"
 #include "buttonService.h"
+#include "d_Led.h"
 
 
 void __init3(void) __attribute__ (( section( ".init3" ), naked, used ));
@@ -38,10 +39,10 @@ int main(void) {
 		// Initializations
 	cradleInit();
 	periphInit();
-	lcd_init();
 	USART_BeginTransmission(__UBRR);
 	usart_rx_str_register_event_callback(parse_uart_data);
 	registerButtonsCallbacks();
+
 
 		// ---------------------
 
@@ -52,6 +53,7 @@ int main(void) {
 	while(1){
 		USART_RX_STR_EVENT(buff);
 		CRADLE_EVENT();
+		dLED::EVENT();
 
 		ButtonUp.Event();
 		ButtonDown.Event();
@@ -59,8 +61,9 @@ int main(void) {
 		ButtonSwitch.Event();
 		ButtonReset.Event();
 
+
 		if(!Timers[testLed]){
-			//DBG_LED_TOG();
+			DBG_LED_TOG();
 			Timers[testLed] = 50;
 		}
 	}

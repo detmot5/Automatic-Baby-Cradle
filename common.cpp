@@ -12,11 +12,12 @@
 #include <avr/sleep.h>
 #include <util/delay.h>
 
-#include "LCD/lcd44780.h"
+
 #include "MicroSwitch/MicroSwitch.h"
 #include "common.h"
 #include "eeprom.h"
-
+#include "d_Led.h"
+#include "cradle.h"
 
 
 
@@ -25,7 +26,7 @@ volatile uint32_t Timers[TIMERS_CNT];
 
 
 	// buttons objects, only in first one we have to pass time base variable
-MicroSwitch ButtonSwitch(&SWITCH_BUTTON_INPUT, SWITCH_BUTTON_PIN,DEFAULT_HOLD_TIME, 255, &Timers[buttonsTimeBase]);
+MicroSwitch ButtonSwitch(&SWITCH_BUTTON_INPUT, SWITCH_BUTTON_PIN, DEFAULT_HOLD_TIME, 255, &Timers[buttonsTimeBase]);
 
 MicroSwitch ButtonUp(&UP_BUTTON_INPUT, UP_BUTTON_PIN,50);
 MicroSwitch ButtonDown(&DOWN_BUTTON_INPUT, DOWN_BUTTON_PIN,50);
@@ -47,6 +48,10 @@ void periphInit(void){
 	ADCSRB |= (1<<ACME);
 		//enable sleep mode
 	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+
+	dLED::print(cradleGetParams(speed));
+	dLED::displayOnTop(SPEED_SYMBOL,1000);
+
 }
 
 
@@ -68,9 +73,8 @@ void sleep(void){
 		// enable PCINT2 to wake up uC by any button
 	PCICR |= (1<<PCIE2);
 	PCMSK2 |= (1<<PCINT19) | (1<<PCINT20) | (1<<PCINT21);
-	lcd_cls();
-	lcd_str_P(PSTR("sleep"));
-	lcd_LED(0);
+	dLED::print(SLEEP_SYMBOL);
+	DBG_LED_OFF();
 	sleep_mode();
 }
 
@@ -89,8 +93,7 @@ ISR(PCINT2_vect){
 		//disable PCINT
 	PCICR = 0;
 	PCMSK2 = 0;
-	lcd_cls();
-	lcd_LED(1);
+
 }
 
 
