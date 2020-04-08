@@ -74,6 +74,8 @@ void sleep(void){
 	PCICR |= (1<<PCIE2);
 	PCMSK2 |= (1<<PCINT19) | (1<<PCINT20) | (1<<PCINT21);
 	dLED::print(SLEEP_SYMBOL);
+	_delay_ms(1000);
+	dLED::clear();
 	DBG_LED_OFF();
 	sleep_mode();
 }

@@ -67,4 +67,6 @@ int8_t CRADLE_EVENT(void);
 int8_t cradleSetParams(svParamsEnum_t cradleParam, uint8_t value);
 uint8_t cradleGetParams(svParamsEnum_t cradleParam);
 
+
+void stop(bool isEnabled);
 #endif /* CRADLE_H_ */

@@ -9,6 +9,7 @@
 #include <avr/eeprom.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 
 
 #include "cradle.h"
@@ -25,6 +26,7 @@ svParams_t servoParams;
 bool stopFlag;
 bool isCradleTimActive;
 bool goSleep;
+bool goStop;
 
 static volatile uint16_t Timer;
 static uint16_t servo_pos = _SERVO_MIN;
@@ -72,6 +74,23 @@ static int8_t servoDrive(void){
 	return isDone;
 }
 
+static void stopProcedure(void){
+
+	if(goStop){
+		uint8_t actualSpeed = cradleGetParams(speed);
+		if(actualSpeed <= 1){
+			stopFlag = true;
+			goStop = false;
+		}
+		else if(!Timers[start_stopCntTim]){
+			cradleSetParams(speed,--actualSpeed);
+			Timers[start_stopCntTim] = 100;
+		}
+	}
+}
+
+
+
 static void stopEvent(void){
 
 	dLED::dP_blink(stopFlag);
@@ -93,6 +112,8 @@ static void stopEvent(void){
 }
 
 
+
+
 //--------------------------------------------------------------------------
 
 void cradleInit(void){
@@ -101,7 +122,6 @@ void cradleInit(void){
 	eeprom_read_speed();
 	eeprom_read_actual_pos();
 	eeprom_read_time_to_sleep();
-	stopFlag = true;
 
 		// **INIT SERVO TIMER**
 	TCCR1A |= (1<<WGM11);						// Fast PWM mode - TOP value - ICR1
@@ -110,7 +130,7 @@ void cradleInit(void){
 	TCCR1A |= (1<<COM1A1);						// OC1A active (non inverting mode)
 	ICR1 = usToTicks(_SERVO_REFRESH_INTERVAL);	// Set top value to 20000us
 	servoWrite(servoParams.actualPos);
-
+	stopFlag = true;
 	SERVO_OUT();
 
 		// **INIT TIME BASE TIMER**
@@ -128,7 +148,7 @@ int8_t CRADLE_EVENT(void){
 	int8_t result;
 
 	stopEvent();
-
+	stopProcedure();
 
 	if((result = servoDrive()) == 1 && !stopFlag){
 		servo_pos = _SERVO_MIN; 	// move done, go back
@@ -180,6 +200,14 @@ uint8_t cradleGetParams(svParamsEnum_t cradleParam){
 
 	return value;
 }
+
+
+void stop(bool isEnabled){
+	goStop = isEnabled;
+}
+
+
+
 
 
 

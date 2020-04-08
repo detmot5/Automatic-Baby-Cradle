@@ -41,7 +41,7 @@ static void buttonSwitchHandler(void){
 }
 
 static void buttonSwitchHoldHandler(void){
-	stopFlag ^= 1;
+	stop(true);
 }
 
 
