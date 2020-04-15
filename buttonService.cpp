@@ -29,19 +29,20 @@ static void buttonSwitchHandler(void){
 	// For range manipulating option the "A" symbol is displayed
 	switch(changingValue){
 	case speed:
-		dLED::print(cradleGetParams(speed));
+		dLED::print(Cradle::GetParams(speed));
 		dLED::displayOnTop(SPEED_SYMBOL,1000);
 		break;
 
 	case range:
-		dLED::print(cradleGetParams(range));
+		dLED::print(Cradle::GetParams(range));
 		dLED::displayOnTop(RANGE_SYMBOL,1000);
 		break;
 	}
 }
 
 static void buttonSwitchHoldHandler(void){
-	stop(true);
+	static bool state = false;
+	Cradle::Stop(state ^= 1);
 }
 
 
@@ -61,17 +62,17 @@ static void buttonUpHandler(void){
 
 	switch(changingValue){
 	case speed:
-		mappedValue = cradleGetParams(speed);
+		mappedValue = Cradle::GetParams(speed);
 		if(mappedValue > 0 && mappedValue <= 9){
 			mappedValue += 1;
-			cradleSetParams(speed, mappedValue);
+			Cradle::SetParams(speed, mappedValue);
 		}
 		break;
 	case range:
-		mappedValue = cradleGetParams(range);
+		mappedValue = Cradle::GetParams(range);
 		if(mappedValue >= 1 && mappedValue <= 9){
 			mappedValue += 1;
-			cradleSetParams(range, mappedValue);
+			Cradle::SetParams(range, mappedValue);
 		}
 		break;
 	}
@@ -82,17 +83,17 @@ static void buttonDownHandler(void){
 
 	switch(changingValue){
 	case speed:
-		mappedValue = cradleGetParams(speed);
+		mappedValue = Cradle::GetParams(speed);
 		if(mappedValue >= 1 && mappedValue <= 9){
 			mappedValue -= 1;
-			cradleSetParams(speed, mappedValue);
+			Cradle::SetParams(speed, mappedValue);
 		}
 		break;
 	case range:
-		mappedValue = cradleGetParams(range);
+		mappedValue = Cradle::GetParams(range);
 		if(mappedValue >= 1 && mappedValue <= 9){
 			mappedValue -= 1;
-			cradleSetParams(range, mappedValue);
+			Cradle::SetParams(range, mappedValue);
 		}
 		break;
 	}

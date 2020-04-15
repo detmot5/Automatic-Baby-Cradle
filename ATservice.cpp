@@ -50,7 +50,7 @@ atresult_t at_spd_service(uint8_t inout, char *params){
 	uint8_t spd;
 
 	if(inout == param){
-		if(stopFlag){
+		if(Cradle::stopFlag){
 			USART_PutStr_P(_deviceStopped);
 			return ERROR;
 		}
@@ -58,12 +58,12 @@ atresult_t at_spd_service(uint8_t inout, char *params){
 		if(!strlen(params) || !isNumber(params)) return ERROR;
 
 		spd = atoi(params);
-		if(cradleSetParams(speed,spd) < 0) return ERROR;
+		if(Cradle::SetParams(speed,spd) < 0) return ERROR;
 	}
 	else if(inout == deviceAsk){
 		USART_PutStr_P(_atSpd);
 		USART_PutStr_P(_endl);
-		USART_PutInt(servoParams.speed,dec);
+		USART_PutInt(Cradle::Params.speed,dec);
 
 	}
 	else if(inout == noParam){
@@ -77,7 +77,7 @@ atresult_t at_range_service(uint8_t inout, char *params){
 	uint16_t dur;
 
 	if(inout == param){
-		if(stopFlag){
+		if(Cradle::stopFlag){
 			USART_PutStr_P(_deviceStopped);
 			return ERROR;
 		}
@@ -85,12 +85,12 @@ atresult_t at_range_service(uint8_t inout, char *params){
 
 
 		dur = atoi(params);
-		if(cradleSetParams(range,dur) < 0) return ERROR;
+		if(Cradle::SetParams(range,dur) < 0) return ERROR;
 	}
 	else if(inout == deviceAsk){
 		USART_PutStr_P(_atDur);
 		USART_PutStr_P(_endl);
-		USART_PutInt(stopFlag,dec);
+		USART_PutInt(Cradle::stopFlag,dec);
 
 	}
 
@@ -102,11 +102,11 @@ atresult_t at_range_service(uint8_t inout, char *params){
 }
 atresult_t at_stop_service(uint8_t inout, char *params){
 	if(inout == noParam){
-		stopFlag ^= 1;
+		Cradle::stopFlag ^= 1;
 	}
 	else if(inout == deviceAsk){
 		USART_PutStr_P(_endl);
-		USART_PutInt(stopFlag,dec);
+		USART_PutInt(Cradle::stopFlag,dec);
 	}
 
 	return SUCCESS;
@@ -114,8 +114,8 @@ atresult_t at_stop_service(uint8_t inout, char *params){
 
 atresult_t at_fac_service(uint8_t inout, char *params){
 	if(inout == noParam || inout == param){
-		cradleSetParams(speed, 1);
-		cradleSetParams(range, 1);
+		Cradle::SetParams(speed, 1);
+		Cradle::SetParams(range, 1);
 		if(inout == param && !strcmp("-a",params)){
 			reset();
 		}
@@ -136,26 +136,26 @@ atresult_t at_tim_service(uint8_t inout, char *params){
 	if(inout == param){
 		if(!strlen(params) || !isNumber(params)) return ERROR;
 		if(time >= 0){
-			stopFlag = false;
+			Cradle::stopFlag = false;
 			Timers[cradleDownCnt] = time * 100; // conversion to 10ms ticks
-			isCradleTimActive = true;
+			Cradle::isTimActive = true;
 		}
 		else{
-			isCradleTimActive = false;
-			stopFlag = false;
+			Cradle::isTimActive = false;
+			Cradle::stopFlag = false;
 			pauseFlag = false;
 		}
 	}
-	else if(inout == noParam && isCradleTimActive){
+	else if(inout == noParam && Cradle::isTimActive){
 		pauseFlag ^= 1;
 		if(pauseFlag){
 			timeRemaining = Timers[cradleDownCnt];
-			stopFlag = true;
+			Cradle::stopFlag = true;
 			USART_PutStr_P(_deviceStopped);
 		}
 		else{
 			Timers[cradleDownCnt] = timeRemaining;
-			stopFlag = false;
+			Cradle::stopFlag = false;
 		}
 	}
 
@@ -168,7 +168,7 @@ atresult_t at_slptim_service(uint8_t inout, char *params){
 	if(inout == param){
 		if(!strlen(params) || !isNumber(params)) return ERROR;
 		time = atoi(params);
-		servoParams.secondsToEnterSleep = time;
+		Cradle::Params.secondsToEnterSleep = time;
 	}
 
 	else if(inout == noParam){

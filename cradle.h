@@ -55,18 +55,22 @@ typedef enum {speed,range} svParamsEnum_t;
 //--------------------------------------------------------------------------
 
 
-extern svParams_t servoParams_eep;
-extern svParams_t servoParams;
+namespace Cradle{
 
-extern bool stopFlag;		// 0 - run  1 - stop
-extern bool isCradleTimActive;
+	extern svParams_t Params_eep;
+	extern svParams_t Params;
 
-void cradleInit(void);
-int8_t CRADLE_EVENT(void);
+	extern bool stopFlag;		// 0 - run  1 - stop
+	extern bool isTimActive;
 
-int8_t cradleSetParams(svParamsEnum_t cradleParam, uint8_t value);
-uint8_t cradleGetParams(svParamsEnum_t cradleParam);
+	void Init(void);
+	int8_t EVENT(void);
+
+	int8_t SetParams(svParamsEnum_t cradleParam, uint8_t value);
+	uint8_t GetParams(svParamsEnum_t cradleParam);
+	void Stop(bool state);
+}
 
 
-void stop(bool isEnabled);
+
 #endif /* CRADLE_H_ */

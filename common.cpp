@@ -21,7 +21,6 @@
 
 
 
-
 volatile uint32_t Timers[TIMERS_CNT];
 
 
@@ -49,7 +48,7 @@ void periphInit(void){
 		//enable sleep mode
 	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
-	dLED::print(cradleGetParams(speed));
+	dLED::print(Cradle::GetParams(speed));
 	dLED::displayOnTop(SPEED_SYMBOL,1000);
 
 }
