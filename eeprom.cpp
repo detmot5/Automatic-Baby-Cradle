@@ -26,8 +26,9 @@ void eeprom_save_actual_pos(void){
 
 void eeprom_update_time_to_sleep(void){
 	eeprom_write_word(&Cradle::Params_eep.secondsToEnterSleep, Cradle::Params.secondsToEnterSleep);
-
 }
+
+
 
 void eeprom_read_speed(void){
 	register uint8_t temp = eeprom_read_byte(&Cradle::Params_eep.speed);
@@ -54,4 +55,5 @@ void eeprom_read_time_to_sleep(void){
 	if(temp != 0xFFFF && temp > 0) Cradle::Params.secondsToEnterSleep = temp;
 	else Cradle::Params.secondsToEnterSleep = _DEFAULT_TIME_TO_SLEEP;
 }
+
 

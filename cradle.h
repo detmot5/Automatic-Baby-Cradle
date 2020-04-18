@@ -69,6 +69,7 @@ namespace Cradle{
 	int8_t SetParams(svParamsEnum_t cradleParam, uint8_t value);
 	uint8_t GetParams(svParamsEnum_t cradleParam);
 	void Stop(bool state);
+	void USART_deviceAnswer(const char *PGMcmd, uint16_t value);
 }
 
 

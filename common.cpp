@@ -74,8 +74,10 @@ void sleep(void){
 	PCMSK2 |= (1<<PCINT19) | (1<<PCINT20) | (1<<PCINT21);
 	dLED::print(SLEEP_SYMBOL);
 	_delay_ms(1000);
+	dLED::dP_blink(false);
 	dLED::clear();
 	DBG_LED_OFF();
+	eeprom_save_actual_pos();
 	sleep_mode();
 }
 
@@ -94,7 +96,6 @@ ISR(PCINT2_vect){
 		//disable PCINT
 	PCICR = 0;
 	PCMSK2 = 0;
-
 }
 
 

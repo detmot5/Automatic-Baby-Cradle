@@ -12,10 +12,12 @@
 #include <util/delay.h>
 
 
+#include "UARTlib/uart.h"
 #include "cradle.h"
 #include "eeprom.h"
 #include "common.h"
 #include "d_Led.h"
+#include "texts.h"
 
 namespace Cradle{
 
@@ -80,11 +82,13 @@ namespace Cradle{
 		return isDone;
 	}
 
+
 	static void startStopProcedure(void){
 		static uint8_t loadedSpeed = 0;
 		static uint8_t actualSpeed = 0;
 		static uint8_t cnt = 0;
 		static bool isSpeedLoaded = false;
+		static bool stopFlagChanged = false;
 
 
 		if(goStop && !stopFlag){
@@ -98,11 +102,11 @@ namespace Cradle{
 				stopFlag = true;
 				goStop = false;
 				isSpeedLoaded = false;
+				stopFlagChanged = true;
 			}
 			else if(!Timers[start_stopCntTim]){
-				//Params.speed = map(--actualSpeed, 1, 9, _SERVO_MAX_DELAY, _SERVO_MIN_DELAY);
 				SetParams(speed,--actualSpeed);
-				Timers[start_stopCntTim] = 70;
+				Timers[start_stopCntTim] = 100;
 			}
 		}
 		else if(goStart){
@@ -112,12 +116,17 @@ namespace Cradle{
 					cnt = 0;
 					loadedSpeed = 0;
 					goStart = false;
+					stopFlagChanged = true;
 				}
 				else if(!Timers[start_stopCntTim]){
 					SetParams(speed, ++cnt);
-					Timers[start_stopCntTim] = 70;
+					Timers[start_stopCntTim] = 100;
 				}
 			}
+		}
+		if(stopFlagChanged){
+			USART_deviceAnswer(PSTR("AT_STOP="),stopFlag);
+			stopFlagChanged = false;
 		}
 	}
 
@@ -129,7 +138,7 @@ namespace Cradle{
 		dLED::dP_blink(stopFlag);
 
 		if(!Timers[cradleDownCnt] && isTimActive){
-			stopFlag = true;
+			Stop(true);
 			if(!goSleep){
 				goSleep = true;
 				Timers[timeToSleep] = Params.secondsToEnterSleep*100; //convert to 10ms ticks
@@ -158,6 +167,12 @@ namespace Cradle{
 	void Stop(bool state){
 		goStop = state;
 		goStart = !state;
+	}
+
+	void USART_deviceAnswer(const char *PGMcmd, uint16_t value){
+		USART_PutStr_P(PGMcmd);
+		USART_PutInt(value,dec);
+		USART_PutStr_P(_endl);
 	}
 
 
@@ -210,24 +225,27 @@ namespace Cradle{
 		// output: 0 for correct value and -1 for wrong
 	int8_t SetParams(svParamsEnum_t cradleParam, uint8_t value){
 		int8_t result;
-		if(value >= 1 && value <= 9){
 			result = 0;
+		if(value >= 1 && value <= 9){
 			switch(cradleParam){
 			case range:
-				Params.duration = map(value, 1 ,9, _SERVO_MIN,_SERVO_MAX);
+				Params.duration = map(value, 1 ,9, _SERVO_MIN+100,_SERVO_MAX);
 				eeprom_update_duration();
-				dLED::print(value);
+				dLED::print(value); //TODO
+				USART_deviceAnswer(PSTR("AT_RANGE="),value);
 				break;
 
 			case speed:
 				Params.speed = map(value, 1, 9, _SERVO_MAX_DELAY, _SERVO_MIN_DELAY); //invert values
 				eeprom_update_speed();
 				dLED::print(value);
+				USART_deviceAnswer(PSTR("AT_SPD="),value);
 				break;
 			}
-			// there will be also code to print it on screen
 		}
 		else result = -1;
+
+
 		return result;
 	}
 

@@ -24,4 +24,3 @@ const char _atSpd[] PROGMEM = "Use AT+SPD=spd ";
 const char _atDur[] PROGMEM = "Use AT+DUR=dur ";
 const char _deviceStopped[] PROGMEM = "Device stopped ";
 
-

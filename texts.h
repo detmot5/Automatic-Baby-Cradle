@@ -21,6 +21,7 @@ extern const char _atSpd[];
 extern const char _atDur[];
 extern const char _deviceStopped[];
 
+extern const char _atiAnswer[];
 
 
 #endif /* TEXTS_H_ */

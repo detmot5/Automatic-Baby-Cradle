@@ -63,7 +63,7 @@ static void buttonUpHandler(void){
 	switch(changingValue){
 	case speed:
 		mappedValue = Cradle::GetParams(speed);
-		if(mappedValue > 0 && mappedValue <= 9){
+		if(mappedValue >= 1  && mappedValue <= 9){
 			mappedValue += 1;
 			Cradle::SetParams(speed, mappedValue);
 		}

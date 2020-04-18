@@ -76,6 +76,7 @@ namespace dLED{
 
 	void clear(void){
 		print(D_LED_CLEAR);
+		seg[DP_INDEX].reset();
 	}
 
 
